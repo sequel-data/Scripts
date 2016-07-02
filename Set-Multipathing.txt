@@ -1,0 +1,1 @@
+Get-Cluster DRS-Teague-2 | Get-VMHost | Get-ScsiLun -CanonicalName *20000bdf7 | Set-ScsiLun -MultipathPolicy "roundrobin"

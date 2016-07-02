@@ -1,0 +1,47 @@
+Get-VM <filters> | Get-CDDrive | Set-CDDrive -NoMedia -Confirm:$false
+
+
+Get-VMHostService -VMHost vmw-t2-b.cis.tamu.edu |
+where {$_.Key -eq "vpxa"} |
+Restart-VMHostService -Confirm:$false
+
+Get-Cluster DRS-Wehner-2 | Get-VM | Get-HardDisk | where {$_.StorageFormat -eq 'Thick'} | export-csv -Path c:\users\rsadmin\Desktop\baddisk-w.csv
+
+
+
+Get-Cluster DRS-Teague-2 |Get-ResourcePool Arch* | Get-VM | Get-HardDisk | where {$_.StorageFormat -eq 'Thick'} | export-csv -Path c:\users\rsadmin\Desktop\baddisk-U.csv
+
+
+
+# Get the Virtual Network Adapter
+#
+# Niklas �kerlund / RTS
+$VMs = Get-VM *
+$Data = @()
+foreach ($VM in $VMs){
+$NICs = $VM.NetworkAdapters
+foreach ($NIC in $NICs) {
+$into = New-Object PSObject
+Add-Member -InputObject $into -MemberType NoteProperty -Name VMname $VM.Name
+Add-Member -InputObject $into -MemberType NoteProperty -Name NICtype $NIC.Type
+$Data += $into
+}
+}
+$Data | Export-Csv -Path c:\users\rsadmin\Desktop\NICs.csv -NoTypeInformation
+
+
+
+
+Get-Cluster DRS-Kyle-1 |Get-VMHost | New-Datastore -Nfs -ReadOnly -Name ISO-REPO -Path "/ISO" -NfsHost 192.168.64.53
+
+
+Get-Folder GBS |Get-Template |Set-Annotation -CustomAttribute "Tech Contact" -Value "user@domain.net"
+
+
+Get-resourcepool Infrastructure-Development |Get-VM | | Select Name,NumCPU,MemoryGB,@{n="HardDiskSizeGB"; e={(Get-HardDisk -VM $_ | Measure-Object -Sum CapacityGB).Sum}} |Export-Csv c:\VMcount-dev.csv
+
+Get-VM | Get-Snapshot -Name "Veeam*" | Remove-Snapshot -confirm:$false
+
+
+
+get-Folder Infrastructure | Get-VM | Get-View | Select Name, @{N="Configured OS";E={$_.Config.GuestFullName}}, @{N="Running OS";E={$_.Guest.GuestFullName}}, @{N="CpuHotAddEnabled";E={$_.Config.CpuHotAddEnabled}}, @{N="CpuHotRemoveEnabled";E={$_.Config.CpuHotRemoveEnabled}}, @{N="MemoryHotAddEnabled";E={$_.Config.MemoryHotAddEnabled}} | export-csv C:\HotAddVMs.csv

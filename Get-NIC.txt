@@ -1,0 +1,2 @@
+Get-ResourcePool Arch* |Get-VM | Get-NetworkAdapter | | Export-Csv -Path c:\users\rsadmin\Desktop\NICs.csv
+
